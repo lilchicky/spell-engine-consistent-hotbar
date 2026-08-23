@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.gmail.thelilchicken01.spech.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "SpellHotbarMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
