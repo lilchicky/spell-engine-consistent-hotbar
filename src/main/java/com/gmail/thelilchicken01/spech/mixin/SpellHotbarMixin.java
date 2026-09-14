@@ -1,29 +1,22 @@
 package com.gmail.thelilchicken01.spech.mixin;
 
 import com.gmail.thelilchicken01.spech.util.SpECHTags;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.spell_engine.api.spell.Spell;
+import net.spell_engine.api.spell.container.SpellContainer;
+import net.spell_engine.api.spell.container.SpellContainerHelper;
 import net.spell_engine.client.SpellEngineClient;
 import net.spell_engine.client.input.SpellHotbar;
 import net.spell_engine.client.input.WrappedKeybinding;
-import net.spell_engine.config.ClientConfig;
-import net.spell_engine.internals.container.SpellContainerSource;
 import net.spell_engine.mixin.client.control.KeybindingAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import javax.swing.text.html.Option;
 
 @Mixin(SpellHotbar.class)
 public class SpellHotbarMixin {
@@ -36,19 +29,21 @@ public class SpellHotbarMixin {
             Player player,
             CallbackInfoReturnable<SpellHotbar.ItemUseExpectation> cir
     ) {
-        if (cir.getReturnValue() == null && SpellContainerSource.activeContainerOf(player) != null) {
+        if (cir.getReturnValue() == null) {
             ItemStack stack = player.getMainHandItem();
 
-            if (!stack.isEmpty() &&
-                    (stack.is(SpECHTags.Items.HAS_NON_SPELL_ENGINE_SPELL) ||
-                            SpellContainerSource.activeContainerOf(player).spell_ids().isEmpty())) {
-                cir.setReturnValue(
-                        new SpellHotbar.ItemUseExpectation(
-                                InteractionHand.MAIN_HAND,
-                                stack
-                        )
-                );
+            if (!stack.isEmpty()) {
+                SpellContainer item_spells = SpellContainerHelper.containerFromItemStack(stack);
+
+                if (item_spells != null && (item_spells.spell_ids().isEmpty() || stack.is(SpECHTags.Items.HAS_NON_SPELL_ENGINE_SPELL))) {
+                    cir.setReturnValue(new SpellHotbar.ItemUseExpectation(InteractionHand.MAIN_HAND, stack));
+                }
             }
         }
+    }
+
+    @ModifyVariable(method = "update(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/client/Options;)Z", at = @At(value = "INVOKE", target = "Lnet/spell_engine/mixin/client/control/KeybindingAccessor;spellEngine_getBoundKey()Lcom/mojang/blaze3d/platform/InputConstants$Key;", ordinal = 1, shift = At.Shift.AFTER), name = "keyBindingIndex")
+    private int spech$skipUseKey(int keyBindingIndex, @Local(name = "useKey") InputConstants.Key useKey, @Local(name = "unwrapped") WrappedKeybinding.Unwrapped unwrapped) {
+        return (SpellEngineClient.config.spellHotbarUseKey && ((KeybindingAccessor)unwrapped.keyBinding()).spellEngine_getBoundKey().equals(useKey)) ? keyBindingIndex - 1 : keyBindingIndex;
     }
 }
