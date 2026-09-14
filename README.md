@@ -1,25 +1,4 @@
 
-Installation information
-=======
+This is an incredibly simple clientside mod that basically makes it so any weapon with an empty spell container will render the item texture as the right click ability, instead of the spell hotkeys shifting to the left. This makes it so weapons with right click abilities (like from Simply Swords or Cataclysm), if set to have no spells in their spell container, will have a dedicated "right click" spot. Note that you will need to set said empty spell container via a mod like Defaulted.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
-
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
-
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
-
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
-
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+In the future I would like to make this more feature rich, like making the item texture rendering optional, and customizing how it determines what to make right click or not via tag, so you don't have to use Defaulted if you don't want to. In theory at least. Right now the mod is incredibly bare bones to just work on the surface.
